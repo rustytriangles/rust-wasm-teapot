@@ -1,9 +1,11 @@
-import { Teapot } from "rust-wasm-teapot";
-import { memory } from "rust-wasm-teapot/rust_wasm_teapot_bg";
+//import { Teapot } from "rust-wasm-teapot";
+//import { memory } from "rust-wasm-teapot/rust_wasm_teapot_bg";
 
 var gmod = require('./graphics');
 
-const ctx = canvas.getContext('2d');
+//const ctx = canvas.getContext('2d');
+
+var frameCounter = 0;
 
 const renderLoop = () => {
     const rect = canvas.getBoundingClientRect();
@@ -13,7 +15,8 @@ const renderLoop = () => {
 	    return;
 	}
 
-    // drawing code goes here
+    // get geomBuffers from teapot and pass them into gmod.draw
+
 	gmod.draw(gl, frameCounter);
 
     requestAnimationFrame(renderLoop);

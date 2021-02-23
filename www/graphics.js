@@ -1,7 +1,6 @@
 // webglteapot © 2020 RustyTriangles LLC
 
 const { mat3, mat4, quat, vec3 } = require('gl-matrix');
-const teapot = require('./teapot');
 
 var shaderProgram = undefined;
 var programInfo = undefined;
@@ -172,13 +171,13 @@ function draw(gl, frameNumber) {
 	}
     }
 
-    if (!geomInfo) {
-	geomInfo = teapot.getGeometry(gl);
-    }
+    // if (!geomInfo) {
+	//     geomInfo = teapot.getGeometry(gl);
+    // }
 
-    if (!geomBuffers) {
-        geomBuffers = initBuffers(gl);
-    }
+    // if (!geomBuffers) {
+    //     geomBuffers = initBuffers(gl);
+    // }
 
     gl.clearColor(0.25,0.25,0.25,1);
     gl.clearDepth(1.0);
@@ -216,39 +215,39 @@ function draw(gl, frameNumber) {
     const stride = 0;
     const offset = 0;
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, geomBuffers.positionBuff);
-    gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition,
-                           geomBuffers.positionNumComponents,
-                           geomBuffers.positionType,
-                           normalize,
-                           stride,
-                           offset);
-    gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+    // gl.bindBuffer(gl.ARRAY_BUFFER, geomBuffers.positionBuff);
+    // gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition,
+    //                        geomBuffers.positionNumComponents,
+    //                        geomBuffers.positionType,
+    //                        normalize,
+    //                        stride,
+    //                        offset);
+    // gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, geomBuffers.normalBuff);
-    gl.vertexAttribPointer(programInfo.attribLocations.vertexNormal,
-                           geomBuffers.normalNumComponents,
-                           geomBuffers.normalType,
-                           normalize,
-                           stride,
-                           offset);
-    gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);
+    // gl.bindBuffer(gl.ARRAY_BUFFER, geomBuffers.normalBuff);
+    // gl.vertexAttribPointer(programInfo.attribLocations.vertexNormal,
+    //                        geomBuffers.normalNumComponents,
+    //                        geomBuffers.normalType,
+    //                        normalize,
+    //                        stride,
+    //                        offset);
+    // gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);
 
-    gl.useProgram(programInfo.program);
+    // gl.useProgram(programInfo.program);
 
-    gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix,
-                        false,
-                        projectionMatrix);
-    gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix,
-                        false,
-                        modelViewMatrix);
-    gl.uniformMatrix3fv(programInfo.uniformLocations.normalMatrix,
-                        false,
-                        normalMatrix);
-    gl.uniform3fv(programInfo.uniformLocations.lightDirection,
-                     lightDir);
-    const numTriangles = geomInfo.numTriangles;
-    gl.drawElements(gl.TRIANGLES, 3*numTriangles, geomBuffers.indicesType, 0);
+    // gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix,
+    //                     false,
+    //                     projectionMatrix);
+    // gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix,
+    //                     false,
+    //                     modelViewMatrix);
+    // gl.uniformMatrix3fv(programInfo.uniformLocations.normalMatrix,
+    //                     false,
+    //                     normalMatrix);
+    // gl.uniform3fv(programInfo.uniformLocations.lightDirection,
+    //                  lightDir);
+    // const numTriangles = geomInfo.numTriangles;
+    // gl.drawElements(gl.TRIANGLES, 3*numTriangles, geomBuffers.indicesType, 0);
 
     checkErrors(gl, 'after drawElements');
 }
