@@ -2,7 +2,7 @@ This is a simple example of using [WebGL](https://www.khronos.org/webgl/) to dra
 
 ![screenshot](images/screenshot.png)
 
-WebGL-Teapot demo © 2020 RustyTriangles LLC
+Rust-Wasm-Teapot demo © 2021 RustyTriangles LLC
 
 ## Building
 
