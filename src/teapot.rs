@@ -156,7 +156,7 @@ fn tesselate_patch(
 
             // normal is cross of the 2 tangents
             // @todo handle the coincident control points case
-            let normal = tan1.normalize().cross(tan2.normalize());
+            let normal = tan2.normalize().cross(tan1.normalize());
             norms.push([normal[0] as f32, normal[1] as f32, normal[2] as f32]);
 
             let uv = [u as f32, v as f32];

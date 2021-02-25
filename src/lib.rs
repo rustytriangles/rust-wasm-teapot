@@ -40,7 +40,7 @@ impl Teapot {
     }
 
     pub fn numIndices(&self) -> u32 {
-        0
+        32 * 2 * 3 * (self.num_rows - 1) * (self.num_cols - 1)
     }
 
     pub fn vertices(&mut self) -> *const [f32; 3] {
@@ -65,8 +65,8 @@ impl Teapot {
     }
 
     pub fn new() -> Teapot {
-        let num_rows = 18;
-        let num_cols = 23;
+        let num_rows = 10;
+        let num_cols = 13;
 
         let mut vertices = Vec::new();
 

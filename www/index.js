@@ -3,6 +3,10 @@ import { memory } from "rust-wasm-teapot/rust_wasm_teapot_bg";
 
 var gmod = require('./graphics');
 
+const canvas = document.getElementById("canvas");
+canvas.width = 640;
+canvas.height = 480;
+
 const teapot = Teapot.new();
 let geomInfo = undefined;
 
@@ -22,10 +26,10 @@ const renderLoop = () => {
         const normal_data = teapot.normals();
         const vertices = new Float32Array(memory.buffer,
                                           vertex_data,
-                                          numVertices);
+                                          3 * numVertices);
         const normals = new Float32Array(memory.buffer,
                                          normal_data,
-                                         numVertices);
+                                         3 * numVertices);
         const numIndices = teapot.numIndices();
         const index_data = teapot.indices();
         const indices = new Int16Array(memory.buffer,
@@ -38,7 +42,7 @@ const renderLoop = () => {
             numVertices: vertices.length/3,
             normals: normals,
             indices: indices,
-            numTriangles: 0
+            numTriangles: indices.length / 3
         };
     }
 

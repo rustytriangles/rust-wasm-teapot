@@ -91,23 +91,23 @@ function initShaders(gl) {
 }
 
 function initBuffers(gl) {
-    console.log('initBuffers');
 
-//    console.log('geomInfo.vertices = ' + geomInfo.vertices);
+    const numVertices = geomInfo.vertices.length;
+
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER,
                   geomInfo.vertices,
                   gl.STATIC_DRAW);
 
-//    console.log('geomInfo.normals = ' + geomInfo.normals);
     const normalBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
     gl.bufferData(gl.ARRAY_BUFFER,
                   geomInfo.normals,
 		  gl.STATIC_DRAW);
 
-//    console.log('geomInfo.indices = ' + geomInfo.indices);
+    const numIndices = geomInfo.indices.length;
+
     const indicesBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
@@ -179,7 +179,6 @@ function draw(gl, g, frameNumber) {
     }
 
     if (g != geomInfo) {
-//        console.log('new g = ' + g);
         geomInfo = g;
 
         if (geomBuffers) {
