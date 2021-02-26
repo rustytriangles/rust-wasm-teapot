@@ -154,10 +154,23 @@ fn tesselate_patch(
 
             verts.push([pt[0] as f32, pt[1] as f32, pt[2] as f32, 1.0]);
 
-            // normal is cross of the 2 tangents
-            // @todo handle the coincident control points case
-            let normal = tan2.normalize().cross(tan1.normalize());
-            norms.push([normal[0] as f32, normal[1] as f32, normal[2] as f32]);
+            // the normal is cross of the 2 tangents,
+            // but if we have coincident control points, it is possible
+            // that one of the first partials is zero length.
+            let norm_tol2 = 1.0e-8;
+            if (tan1.magnitude2() > norm_tol2 && tan2.magnitude2() > norm_tol2) {
+                let normal = tan2.normalize().cross(tan1.normalize());
+                norms.push([normal[0] as f32, normal[1] as f32, normal[2] as f32]);
+            } else {
+                // A bit hacky, but the 2 nipples happen to be at the top and bottom
+                // of the teapot, and we know the normals there.
+                let normal = if (pt[2] > 0.) {
+                    [0., 0.,-1.]
+                } else {
+                    [0., 0., 1.]
+                };
+                norms.push(normal);
+            }
 
             let uv = [u as f32, v as f32];
             uvs.push(uv);
