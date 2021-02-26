@@ -12,23 +12,12 @@ use wasm_bindgen::prelude::*;
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
-pub struct Triangle {
-    v0: [f32; 3],
-    v1: [f32; 3],
-    v2: [f32; 3],
-}
-
-#[wasm_bindgen]
 pub struct Teapot {
     num_rows: u32,
     num_cols: u32,
     vertices: Vec<[f32; 3]>,
     normals: Vec<[f32; 3]>,
     indices: Vec<u16>
-}
-
-impl Teapot {
-
 }
 
 /// Public methods, exported to JavaScript.
@@ -108,13 +97,5 @@ impl Teapot {
         for i in 0..num_indices {
             self.indices.push(index_data[i] as u16);
         }
-    }
-
-    pub fn render(&self) -> String {
-        let num_rows = self.num_rows as usize;
-        let num_cols = self.num_cols as usize;
-
-        //        self.to_string()
-        "Fudge".to_string()
     }
 }
