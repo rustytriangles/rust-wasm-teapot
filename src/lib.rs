@@ -24,30 +24,30 @@ pub struct Teapot {
 #[wasm_bindgen]
 impl Teapot {
 
-    pub fn numVertices(&self) -> u32 {
+    pub fn num_vertices(&self) -> u32 {
         32 * self.num_rows * self.num_cols
     }
 
-    pub fn numIndices(&self) -> u32 {
+    pub fn num_indices(&self) -> u32 {
         32 * 2 * 3 * (self.num_rows - 1) * (self.num_cols - 1)
     }
 
     pub fn vertices(&mut self) -> *const [f32; 3] {
-        if (self.vertices.len() == 0) {
+        if self.vertices.len() == 0 {
             self.rebuild();
         }
         self.vertices.as_ptr()
     }
 
     pub fn normals(&mut self) -> *const [f32; 3] {
-        if (self.normals.len() == 0) {
+        if self.normals.len() == 0 {
             self.rebuild();
         }
         self.normals.as_ptr()
     }
 
     pub fn indices(&mut self) -> *const u16 {
-        if (self.indices.len() == 0) {
+        if self.indices.len() == 0 {
             self.rebuild();
         }
         self.indices.as_ptr()
@@ -57,14 +57,11 @@ impl Teapot {
         let num_rows = 10;
         let num_cols = 13;
 
-        let mut vertices = Vec::new();
+        let vertices = Vec::new();
 
-        let mut normals = Vec::new();
+        let normals = Vec::new();
 
-        let mut indices = Vec::with_capacity(4);
-        indices.push(1);
-        indices.push(2);
-        indices.push(3);
+        let indices = Vec::new();
 
         Teapot {
             num_rows,
@@ -84,7 +81,7 @@ impl Teapot {
         let num_vertices = num_patches * num_rows * num_cols;
         let num_indices = num_patches * 2 * 3 * (num_rows - 1) * (num_cols - 1);
 
-        let (vertex_data, normal_data, uv_data, index_data) = teapot::create_vertices(num_rows, num_cols);
+        let (vertex_data, normal_data, _uv_data, index_data) = teapot::create_vertices(num_rows, num_cols);
 
         self.vertices = Vec::with_capacity(num_vertices);
         self.normals = Vec::with_capacity(num_vertices);

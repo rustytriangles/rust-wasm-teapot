@@ -158,13 +158,13 @@ fn tesselate_patch(
             // but if we have coincident control points, it is possible
             // that one of the first partials is zero length.
             let norm_tol2 = 1.0e-8;
-            if (tan1.magnitude2() > norm_tol2 && tan2.magnitude2() > norm_tol2) {
+            if tan1.magnitude2() > norm_tol2 && tan2.magnitude2() > norm_tol2 {
                 let normal = tan2.normalize().cross(tan1.normalize());
                 norms.push([normal[0] as f32, normal[1] as f32, normal[2] as f32]);
             } else {
                 // A bit hacky, but the 2 nipples happen to be at the top and bottom
                 // of the teapot, and we know the normals there.
-                let normal = if (pt[2] > 0.) {
+                let normal = if pt[2] > 0. {
                     [0., 0.,-1.]
                 } else {
                     [0., 0., 1.]
@@ -190,6 +190,87 @@ fn tesselate_patch(
     }
 
     (verts, norms, uvs, indices)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_tesselate_patch() {
+        let cpts = vec![
+            vec![Point3::new(0.,0.,0.), Point3::new(1.,0.,0.), Point3::new(2.,0.,0.), Point3::new(3.,0.,0.)],
+            vec![Point3::new(0.,1.,0.), Point3::new(1.,1.,0.), Point3::new(2.,1.,0.), Point3::new(3.,1.,0.)],
+            vec![Point3::new(0.,2.,0.), Point3::new(1.,2.,0.), Point3::new(2.,2.,0.), Point3::new(3.,2.,0.)],
+            vec![Point3::new(0.,3.,0.), Point3::new(1.,3.,0.), Point3::new(2.,3.,0.), Point3::new(3.,3.,0.)],
+        ];
+
+        let num_rows = 3;
+        let num_cols = 5;
+        let (vertices, normals, uvs, indices) = tesselate_patch(&cpts, num_rows, num_cols);
+
+        // vertices
+        assert_eq!(vertices.len(), num_rows * num_cols);
+        assert_eq!(vertices[ 0], [0.  , 0. , 0., 1.]);
+        assert_eq!(vertices[ 1], [0.75, 0. , 0., 1.]);
+        assert_eq!(vertices[ 2], [1.5 , 0. , 0., 1.]);
+        assert_eq!(vertices[ 3], [2.25, 0. , 0., 1.]);
+        assert_eq!(vertices[ 4], [3.  , 0. , 0., 1.]);
+
+        assert_eq!(vertices[ 5], [0.  , 1.5, 0., 1.]);
+        assert_eq!(vertices[ 6], [0.75, 1.5, 0., 1.]);
+        assert_eq!(vertices[ 7], [1.5 , 1.5, 0., 1.]);
+        assert_eq!(vertices[ 8], [2.25, 1.5, 0., 1.]);
+        assert_eq!(vertices[ 9], [3.  , 1.5, 0., 1.]);
+
+        assert_eq!(vertices[10], [0.  , 3. , 0., 1.]);
+        assert_eq!(vertices[11], [0.75, 3. , 0., 1.]);
+        assert_eq!(vertices[12], [1.5 , 3. , 0., 1.]);
+        assert_eq!(vertices[13], [2.25, 3. , 0., 1.]);
+        assert_eq!(vertices[14], [3.  , 3. , 0., 1.]);
+
+        // normals
+        assert_eq!(normals.len(), num_rows * num_cols);
+        for i in 0..num_rows*num_cols {
+            assert_eq!(normals[i], [0.  , 0. ,-1.]);
+        }
+
+        // uvs
+        assert_eq!(uvs.len(), num_rows * num_cols);
+        assert_eq!(uvs[ 0], [0.  , 0. ]);
+        assert_eq!(uvs[ 1], [0.25, 0. ]);
+        assert_eq!(uvs[ 2], [0.5 , 0. ]);
+        assert_eq!(uvs[ 3], [0.75, 0. ]);
+        assert_eq!(uvs[ 4], [1.  , 0. ]);
+
+        assert_eq!(uvs[ 5], [0.  , 0.5]);
+        assert_eq!(uvs[ 6], [0.25, 0.5]);
+        assert_eq!(uvs[ 7], [0.5 , 0.5]);
+        assert_eq!(uvs[ 8], [0.75, 0.5]);
+        assert_eq!(uvs[ 9], [1.  , 0.5]);
+
+        assert_eq!(uvs[10], [0.  , 1. ]);
+        assert_eq!(uvs[11], [0.25, 1. ]);
+        assert_eq!(uvs[12], [0.5 , 1. ]);
+        assert_eq!(uvs[13], [0.75, 1. ]);
+        assert_eq!(uvs[14], [1.  , 1. ]);
+
+        // indices
+        assert_eq!(indices.len(), 2 * 3 * (num_rows-1) * (num_cols-1));
+        for j in 0..2 {
+            let s = j * 6 * 4 as usize;
+            let t = (j * 5) as u32;
+            for i in 0..4 {
+                assert_eq!(indices[s + 6*i+0], t + i as u32);
+                assert_eq!(indices[s + 6*i+1], t + i as u32 + 1);
+                assert_eq!(indices[s + 6*i+2], t + (num_cols + i) as u32 + 1);
+
+                assert_eq!(indices[s + 6*i+3], t + i as u32);
+                assert_eq!(indices[s + 6*i+4], t + (num_cols + i) as u32 + 1);
+                assert_eq!(indices[s + 6*i+5], t + (num_cols + i) as u32);
+            }
+        }
+    }
 }
 
 fn control_points() -> Vec<Vec<Vec<Point3<f32>>>> {

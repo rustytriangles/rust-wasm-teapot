@@ -21,7 +21,7 @@ const renderLoop = () => {
 	}
 
     if (!geomInfo) {
-        const numVertices = teapot.numVertices();
+        const numVertices = teapot.num_vertices();
         const vertex_data = teapot.vertices();
         const normal_data = teapot.normals();
         const vertices = new Float32Array(memory.buffer,
@@ -30,7 +30,7 @@ const renderLoop = () => {
         const normals = new Float32Array(memory.buffer,
                                          normal_data,
                                          3 * numVertices);
-        const numIndices = teapot.numIndices();
+        const numIndices = teapot.num_indices();
         const index_data = teapot.indices();
         const indices = new Int16Array(memory.buffer,
                                        index_data,
