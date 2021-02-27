@@ -11,6 +11,7 @@ pub fn create_vertices(
     let mut normals: Vec<[f32; 3]> = Vec::with_capacity(12);
     let mut uvs: Vec<[f32; 2]> = Vec::with_capacity(12);
     let mut indices: Vec<u32> = Vec::with_capacity(12);
+
     for i in 0..32 {
         let base = vertices.len() as u32;
 
@@ -51,12 +52,10 @@ fn tesselate_patch(
         let mv3 = mv * mv2;
 
         let vp = Vector4::new(mv3, 3.0 * mv2 * v, 3.0 * mv * v2, v3);
-        let dv = Vector4::new(
-            -3.0 + 6.0 * v - 3.0 * v2,
-            3.0 * (1.0 - 4.0 * v + 3.0 * v2),
-            3.0 * (2.0 * v - 3.0 * v2),
-            3.0 * v2,
-        );
+        let dv = Vector4::new(-3.0 + 6.0 * v - 3.0 * v2,
+                               3.0 * (1.0 - 4.0 * v + 3.0 * v2),
+                               3.0 * (2.0 * v - 3.0 * v2),
+                               3.0 * v2);
 
         for c in 0..nc {
             let u = c as f64 / (nc - 1) as f64;
@@ -67,73 +66,19 @@ fn tesselate_patch(
             let mu3 = mu * mu2;
 
             let up = Vector4::new(mu3, 3.0 * mu2 * u, 3.0 * mu * u2, u3);
-            let du = Vector4::new(
-                -3.0 + 6.0 * u - 3.0 * u2,
-                3.0 * (1.0 - 4.0 * u + 3.0 * u2),
-                3.0 * (2.0 * u - 3.0 * u2),
-                3.0 * u2,
-            );
+            let du = Vector4::new(-3.0 + 6.0 * u - 3.0 * u2,
+                                   3.0 * (1.0 - 4.0 * u + 3.0 * u2),
+                                   3.0 * (2.0 * u - 3.0 * u2),
+                                   3.0 * u2);
 
             // Basis matrix times vectors of powers of parameters. See post
             // on my Mathworks blog for details:
             // https://blogs.mathworks.com/graphics/2015/05/12/patch-work/
-            let w = Matrix4::new(
-                up[0] * vp[0],
-                up[1] * vp[0],
-                up[2] * vp[0],
-                up[3] * vp[0],
-                up[0] * vp[1],
-                up[1] * vp[1],
-                up[2] * vp[1],
-                up[3] * vp[1],
-                up[0] * vp[2],
-                up[1] * vp[2],
-                up[2] * vp[2],
-                up[3] * vp[2],
-                up[0] * vp[3],
-                up[1] * vp[3],
-                up[2] * vp[3],
-                up[3] * vp[3],
-            );
+            let w = times(up, vp);
 
             // First partials
-            let dwdv = Matrix4::new(
-                du[0] * vp[0],
-                du[1] * vp[0],
-                du[2] * vp[0],
-                du[3] * vp[0],
-                du[0] * vp[1],
-                du[1] * vp[1],
-                du[2] * vp[1],
-                du[3] * vp[1],
-                du[0] * vp[2],
-                du[1] * vp[2],
-                du[2] * vp[2],
-                du[3] * vp[2],
-                du[0] * vp[3],
-                du[1] * vp[3],
-                du[2] * vp[3],
-                du[3] * vp[3],
-            );
-
-            let dwdu = Matrix4::new(
-                up[0] * dv[0],
-                up[1] * dv[0],
-                up[2] * dv[0],
-                up[3] * dv[0],
-                up[0] * dv[1],
-                up[1] * dv[1],
-                up[2] * dv[1],
-                up[3] * dv[1],
-                up[0] * dv[2],
-                up[1] * dv[2],
-                up[2] * dv[2],
-                up[3] * dv[2],
-                up[0] * dv[3],
-                up[1] * dv[3],
-                up[2] * dv[3],
-                up[3] * dv[3],
-            );
+            let dwdv = times(du, vp);
+            let dwdu = times(up, dv);
 
             let mut pt = Vector3::new(0f64, 0f64, 0f64);
             let mut tan1 = Vector3::new(0f64, 0f64, 0f64);
@@ -197,7 +142,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_tesselate_patch() {
+    fn test_tesselate_patch_simple() {
         let cpts = vec![
             vec![Point3::new(0.,0.,0.), Point3::new(1.,0.,0.), Point3::new(2.,0.,0.), Point3::new(3.,0.,0.)],
             vec![Point3::new(0.,1.,0.), Point3::new(1.,1.,0.), Point3::new(2.,1.,0.), Point3::new(3.,1.,0.)],
@@ -261,13 +206,18 @@ mod tests {
             let s = j * 6 * 4 as usize;
             let t = (j * 5) as u32;
             for i in 0..4 {
-                assert_eq!(indices[s + 6*i+0], t + i as u32);
-                assert_eq!(indices[s + 6*i+1], t + i as u32 + 1);
-                assert_eq!(indices[s + 6*i+2], t + (num_cols + i) as u32 + 1);
+                let v00 = t + i as u32;
+                let v10 = t + i as u32 + 1;
+                let v01 = t + (num_cols + i) as u32;
+                let v11 = t + (num_cols + i) as u32 + 1;
 
-                assert_eq!(indices[s + 6*i+3], t + i as u32);
-                assert_eq!(indices[s + 6*i+4], t + (num_cols + i) as u32 + 1);
-                assert_eq!(indices[s + 6*i+5], t + (num_cols + i) as u32);
+                assert_eq!(indices[s + 6*i + 0], v00);
+                assert_eq!(indices[s + 6*i + 1], v10);
+                assert_eq!(indices[s + 6*i + 2], v11);
+
+                assert_eq!(indices[s + 6*i + 3], v00);
+                assert_eq!(indices[s + 6*i + 4], v11);
+                assert_eq!(indices[s + 6*i + 5], v01);
             }
         }
     }
@@ -1141,4 +1091,24 @@ fn control_points() -> Vec<Vec<Vec<Point3<f32>>>> {
         ],
     ]
     .to_vec()
+}
+
+fn times(l: Vector4<f64>, r: Vector4<f64>) -> Matrix4<f64> {
+    Matrix4::new(
+        l[0] * r[0],
+        l[1] * r[0],
+        l[2] * r[0],
+        l[3] * r[0],
+        l[0] * r[1],
+        l[1] * r[1],
+        l[2] * r[1],
+        l[3] * r[1],
+        l[0] * r[2],
+        l[1] * r[2],
+        l[2] * r[2],
+        l[3] * r[2],
+        l[0] * r[3],
+        l[1] * r[3],
+        l[2] * r[3],
+        l[3] * r[3])
 }
